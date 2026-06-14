@@ -46,7 +46,7 @@ ranking_selecciones = [{"Canadá": 0,
   "Curazao": 0,
   "Haití": 0,
   "Panamá": 0,
-  "Nueva Zelanda": 0}]
+  "Nueva Zelanda": 0 }]
 #Lista de grupos
 grupos = {
     "GrupoA": [{'México': 0, 'Sudáfrica': 0, 'Corea del Sur': 0, 'República Checa': 0,}],
@@ -70,7 +70,6 @@ def cargar_todos_los_puntos(grupos):
 cargar_todos_los_puntos(grupos)
 
 for grupo in grupos:
-    
     print(f"\n{grupo}")
     ordenado = sorted(
         grupos[grupo][0].items(),
