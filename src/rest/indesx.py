@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from db.db import db
 from controllers.puntajegeneral import cargar_puntos
 app = Flask(__name__)
-
+CORS(app)
 @app.route("/")
 def home():
     return {"mensaje": "Servidor funcionando ✅"}
