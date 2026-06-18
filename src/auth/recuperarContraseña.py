@@ -1,4 +1,4 @@
-import db.db import db
+from db.db import db
 import bcrypt
 
 def reset_password(user=None, new_password=None):
