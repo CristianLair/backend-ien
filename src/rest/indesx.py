@@ -17,6 +17,9 @@ CORS(app)
 @app.route("/")
 def home():
     return {"mensaje": "Servidor funcionando ✅"}
+@app.route("/ping")
+def ping():
+    return {"status": "alive"}, 200
 
 @app.route("/paises", methods=["GET"])
 def ranking():
