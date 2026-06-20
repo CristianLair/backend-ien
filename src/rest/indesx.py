@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from db.db import db
 from controllers.puntajegeneral import obtener_paises, actualizar_puntos_paises
+from utils.middleweare import token_required
 from auth.registro import register
 from auth.login import login
 from auth.recuperarContraseña import reset_password
@@ -28,8 +29,19 @@ def home():
 @app.route("/ping")
 def ping():
     return {"status": "alive"}, 200
+@app.route('/login', methods=['POST'])
+def login_user():
+    data = request.get_json()
+    user = data.get('user')
+    password = data.get('password')
 
+    try:
+        token = login(user, password)
+        return jsonify({'success': True, 'message': 'login realizado con exito', 'token': token}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 @app.route("/paises", methods=["GET"])
+@token_required
 def ranking():
     tabla, error = obtener_paises()
 
@@ -38,6 +50,7 @@ def ranking():
 
     return jsonify(tabla), 200
 @app.route("/paises/puntos", methods=["PUT"])
+@token_required
 def actualizar_puntos_paises_route():
     data = request.get_json()
     if not data:
@@ -72,17 +85,6 @@ def registro():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-@app.route('/login', methods=['POST'])
-def login_user():
-    data = request.get_json()
-    user = data.get('user')
-    password = data.get('password')
-    
-    try:
-        login(user, password)
-        return jsonify({'success': True, 'message': 'login realizado con exito'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
 @app.route('/resetPassword', methods=['POST'])
 def reset_password_user():
     data = request.get_json()
@@ -97,6 +99,7 @@ def reset_password_user():
 
 
 @app.route("/grupos", methods=["GET"])
+@token_required
 def obtener_todos_los_grupos_route():
     tabla, error = obtener_todos_los_grupos()
 
@@ -107,6 +110,7 @@ def obtener_todos_los_grupos_route():
 
 
 @app.route("/grupos/<nombre_grupo>", methods=["GET"])
+@token_required
 def obtener_grupo_route(nombre_grupo):
     tabla, error = obtener_grupo(nombre_grupo)
 
@@ -117,6 +121,7 @@ def obtener_grupo_route(nombre_grupo):
 
 
 @app.route("/grupos/<nombre_grupo>/puntos", methods=["PUT"])
+@token_required
 def actualizar_puntos_grupo_route(nombre_grupo):
     data = request.get_json()
     if not data:
@@ -142,6 +147,7 @@ def actualizar_puntos_grupo_route(nombre_grupo):
     return jsonify({"grupo": nombre_grupo, "tabla": tabla}), 200
 
 @app.route("/grupos/<nombre_grupo>/pais", methods=["PATCH"])
+@token_required
 def actualizar_puntos_pais_route(nombre_grupo):
     data = request.get_json()
     if not data or "pais" not in data or "puntos" not in data:
@@ -157,6 +163,7 @@ def actualizar_puntos_pais_route(nombre_grupo):
 
 
 @app.route("/grupos/reset", methods=["POST"])
+@token_required
 def resetear_puntos_route():
     ok, error = resetear_puntos()
 
@@ -167,6 +174,7 @@ def resetear_puntos_route():
 
 
 @app.route("/ranking", methods=["GET"])
+@token_required
 def ranking_global_route():
     top = request.args.get("top", 10, type=int)
     ranking, error = ranking_global(top)
