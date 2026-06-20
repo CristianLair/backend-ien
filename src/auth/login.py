@@ -11,7 +11,7 @@ def login(user=None, password=None):
     if not bcrypt.checkpw(password.encode('utf-8'), found_user['password']):
         raise Exception('Contraseña inválida')
 
-    token = generar_token(user)
+    rol = found_user.get('rol', 'cliente')
+    token = generar_token(user, rol)
     return token
-    
      

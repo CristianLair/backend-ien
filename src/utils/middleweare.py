@@ -1,16 +1,17 @@
 import os
 import jwt
-from functools import wraps
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 from flask import request, jsonify
 
 SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 
 
-def generar_token(user):
+def generar_token(user, rol="cliente"):
     payload = {
         "user": user,
+        "rol": rol,
         "exp": datetime.now(timezone.utc) + timedelta(hours=1),
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -38,6 +39,18 @@ def token_required(f):
             return jsonify({"error": "Token inválido"}), 401
 
         request.user = payload.get("user")
+        request.rol = payload.get("rol", "cliente")
+
+        return f(*args, **kwargs)
+
+    return decorated
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if getattr(request, "rol", None) != "admin":
+            return jsonify({"error": "Esta acción requiere rol de administrador"}), 403
 
         return f(*args, **kwargs)
 
