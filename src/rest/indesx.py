@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from db.db import db
-from controllers.puntajegeneral import obtener_paises
+from controllers.puntajegeneral import obtener_paises, actualizar_puntos_paises
 from auth.registro import register
 from auth.login import login
 from auth.recuperarContraseña import reset_password
@@ -35,6 +35,29 @@ def ranking():
 
     if error:
         return jsonify({"error": error}), 404
+
+    return jsonify(tabla), 200
+@app.route("/paises/puntos", methods=["PUT"])
+def actualizar_puntos_paises_route():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "El cuerpo no puede estar vacío"}), 400
+
+    campos_requeridos = ["pais1", "puntos1", "pais2", "puntos2"]
+    faltantes = [c for c in campos_requeridos if c not in data]
+    if faltantes:
+        return jsonify({"error": f"Faltan los campos: {faltantes}"}), 400
+
+    tabla, error = actualizar_puntos_paises(
+        data["pais1"],
+        data["puntos1"],
+        data["pais2"],
+        data["puntos2"],
+    )
+
+    if error:
+        status = 404 if "no encontrados" in error else 400
+        return jsonify({"error": error}), status
 
     return jsonify(tabla), 200
 @app.route('/registro', methods=['POST'])
