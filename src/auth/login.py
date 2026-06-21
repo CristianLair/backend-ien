@@ -13,7 +13,8 @@ def login(user=None, password=None):
     stored_password = found_user['password']
 
 
-    print(f"[DEBUG login] type(password)={type(password)} type(stored_password)={type(stored_password)}")
+   print(f"[DEBUG] type(password)={type(password)!r} value={password!r}", flush=True)
+   print(f"[DEBUG] type(stored_password)={type(stored_password)!r} value={stored_password!r}", flush=True)
 
     if isinstance(stored_password, str):
         stored_password = stored_password.encode('utf-8')
