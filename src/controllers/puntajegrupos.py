@@ -111,7 +111,7 @@ def resetear_puntos():
     return True, None
 
 
-def ranking_global(top=10):
+def ranking_global_equipos(top=10):
     documento = _obtener_documento()
     if documento is None:
         return None, "No se encontraron grupos cargados"

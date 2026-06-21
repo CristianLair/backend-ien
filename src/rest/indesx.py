@@ -19,7 +19,7 @@ from controllers.partidos import (
     cargar_resultado_por_equipos
 )
 from utils.middleweare import token_required, admin_required
-from controllers.usuarios import cambiar_rol, obtener_perfil
+from controllers.usuarios import cambiar_rol, obtener_perfil, ranking_global
 from auth.registro import register
 from auth.login import login
 from auth.recuperarContraseña import reset_password
@@ -29,7 +29,7 @@ from controllers.puntajegrupos import (
     actualizar_puntos_grupo,
     actualizar_puntos_pais,
     resetear_puntos,
-    ranking_global,
+    ranking_global_equipos,
 )
 
 app = Flask(__name__)
@@ -100,6 +100,8 @@ def registro():
 @app.route('/resetPassword', methods=['POST'])
 def reset_password_user():
     data = request.get_json()
+    if not data:
+        return jsonify({"error":"json invalido"}), 400
     user = data.get('user')
     password = data.get('password')
     

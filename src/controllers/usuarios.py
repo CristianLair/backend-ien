@@ -19,7 +19,37 @@ def cambiar_rol(user, nuevo_rol):
     )
 
     return {"user": user, "rol": nuevo_rol}, None
+def ranking_global(top=10):
+    try:
+        usuarios = list(
+            coleccion_usuarios.find(
+                {},
+                {
+                    "_id": 1,
+                    "user": 1,
+                    "puntos": 1
+                }
+            )
+        )
 
+        ranking = [
+            {
+                "_id": str(usuario["_id"]),
+                "user": usuario.get("user", ""),
+                "puntos": usuario.get("puntos", 0)
+            }
+            for usuario in usuarios
+        ]
+
+        ranking.sort(
+            key=lambda x: x["puntos"],
+            reverse=True
+        )
+
+        return ranking[:top], None
+
+    except Exception as e:
+        return None, str(e)
 
 def obtener_perfil(user):
     usuario = coleccion_usuarios.find_one({"user": user}, {"_id": 0, "password": 0})
