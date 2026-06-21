@@ -14,7 +14,6 @@ def register(user=None, password=None):
     validacionUser = tiene_caracteres_especiales(user)
     if validacionUser == True:
         raise Exception("El usuario no puede contener carecteres especiales.")
-    user = user.lower().strip()
     existing_user = db['usuarios'].find_one({'user': user})
     if existing_user:
         raise Exception('El usuario ya existe')

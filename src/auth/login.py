@@ -1,6 +1,7 @@
 from db.db import db  
 import bcrypt
 from utils.middleweare import generar_token
+
 def login(user=None, password=None):
     if not user or not password:
         raise Exception('El usuario y la contraseña son obligatorios')
@@ -8,10 +9,9 @@ def login(user=None, password=None):
     found_user = db['usuarios'].find_one({'user': user})
     if not found_user:
         raise Exception('Usuario no encontrado')
-    if not bcrypt.checkpw(password.encode('utf-8'), found_user['password']):
+        
+    if not bcrypt.checkpw(password.encode('utf-8'), found_user['password'].encode('utf-8')):
         raise Exception('Contraseña inválida')
-
     rol = found_user.get('rol', 'cliente')
     token = generar_token(user, rol)
     return token
-     
