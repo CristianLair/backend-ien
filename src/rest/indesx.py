@@ -43,6 +43,7 @@ def ping():
 @app.route('/login', methods=['POST'])
 def login_user():
     data = request.get_json()
+    print(f"[DEBUG-RAW] body recibido en /login: {data!r}", flush=True)
     user = data.get('user')
     password = data.get('password')
 
