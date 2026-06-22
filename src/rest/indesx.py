@@ -16,7 +16,8 @@ from controllers.partidos import (
     predecir_partido,
     obtener_predicciones_usuario,
     obtener_prediccion,
-    cargar_resultado_por_equipos
+    cargar_resultado_por_equipos,
+    reprocesar_predicciones_pendientes,
 )
 from utils.middleweare import token_required, admin_required
 from controllers.usuarios import cambiar_rol, obtener_perfil, ranking_global
@@ -353,6 +354,25 @@ def perfil_route():
         return jsonify({"error": error}), 404
 
     return jsonify(perfil), 200
+    
+@app.route("/jobs/reprocesar-predicciones", methods=["POST"])
+def reprocesar_predicciones_route():
+    secret_header = request.headers.get("X-Jobs-Secret")
+    jobs_secret = os.environ.get("JOBS_SECRET")
+
+    if not jobs_secret or secret_header != jobs_secret:
+        return jsonify({"error": "No autorizado"}), 401
+
+    horas = request.args.get("horas", 3, type=int)
+    resultado, error = reprocesar_predicciones_pendientes(horas)
+
+    if error:
+        return jsonify({"error": error}), 400
+
+    return jsonify({
+        "mensaje": f"Se reprocesaron {len(resultado)} partido(s)",
+        "detalle": resultado,
+    }), 200
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3000))
     app.run(debug=False, host="0.0.0.0", port=port)

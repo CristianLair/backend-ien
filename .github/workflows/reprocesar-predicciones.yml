@@ -1,0 +1,23 @@
+name: Reprocesar predicciones pendientes
+on:
+  schedule:
+    - cron: "0 */3 * * *"
+  workflow_dispatch: {} 
+
+jobs:
+  reprocesar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al endpoint de reprocesamiento
+        run: |
+          response=$(curl -s -o response.json -w "%{http_code}" \
+            -X POST "https://backend-ien.onrender.com/jobs/reprocesar-predicciones" \
+            -H "X-Jobs-Secret: ${{ secrets.JOBS_SECRET }}")
+
+          echo "HTTP status: $response"
+          cat response.json
+
+          if [ "$response" -ne 200 ]; then
+            echo "El job falló con status $response"
+            exit 1
+          fi

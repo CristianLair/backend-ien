@@ -273,3 +273,32 @@ def obtener_prediccion(user, partido_id):
         return None, "No existe una predicción de este usuario para este partido"
  
     return _serializar(prediccion), Non
+
+def reprocesar_predicciones_pendientes(horas=3):
+    partidos_finalizados = coleccion_partidos.find({"finalizado": True})
+
+    reprocesados = []
+
+    for partido in partidos_finalizados:
+        partido_id = str(partido["_id"])
+
+        pendientes = coleccion_predicciones.count_documents({
+            "partido_id": partido_id,
+            "procesado": False,
+        })
+
+        if pendientes == 0:
+            continue
+
+        _procesar_predicciones(
+            partido_id,
+            partido["goles_local"],
+            partido["goles_visitante"],
+        )
+
+        reprocesados.append({
+            "partido_id": partido_id,
+            "predicciones_procesadas": pendientes,
+        })
+
+    return reprocesados, None
