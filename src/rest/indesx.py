@@ -359,7 +359,9 @@ def perfil_route():
 def reprocesar_predicciones_route():
     secret_header = request.headers.get("X-Jobs-Secret")
     jobs_secret = os.environ.get("JOBS_SECRET")
-
+    print(f"[DEBUG] header recibido: {repr(secret_header)} (len={len(secret_header) if secret_header else 0})")
+    print(f"[DEBUG] secret esperado: {repr(jobs_secret)} (len={len(jobs_secret) if jobs_secret else 0})")
+    print(f"[DEBUG] coinciden: {secret_header == jobs_secret}")
     if not jobs_secret or secret_header != jobs_secret:
         return jsonify({"error": "No autorizado"}), 401
 
